@@ -8,10 +8,18 @@ import moment from "moment";
 
 const COLORS = ["#2DDDA8", "#A78BFA", "#F5B080", "#FF6B6B", "#60A5FA"];
 
+const RANGE_OPTIONS = [
+  { label: "4W", weeks: 4 },
+  { label: "12W", weeks: 12 },
+  { label: "6M", weeks: 26 },
+  { label: "1Y", weeks: 52 },
+];
+
 export default function Analytics() {
   const [projects, setProjects] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [velocityRange, setVelocityRange] = useState(12);
 
   useEffect(() => {
     const load = async () => {
@@ -52,12 +60,13 @@ export default function Analytics() {
 
   // Weekly velocity
   const velocityData = [];
-  for (let i = 11; i >= 0; i--) {
+  for (let i = velocityRange - 1; i >= 0; i--) {
     const weekStart = moment().subtract(i, "weeks").startOf("week");
     const weekEnd = moment().subtract(i, "weeks").endOf("week");
     const created = tasks.filter((t) => moment(t.created_date).isBetween(weekStart, weekEnd)).length;
     const completed = tasks.filter((t) => t.status === "done" && moment(t.updated_date).isBetween(weekStart, weekEnd)).length;
-    velocityData.push({ week: weekStart.format("MMM D"), created, completed });
+    const tickFormat = velocityRange <= 12 ? "MMM D" : "MMM 'YY";
+    velocityData.push({ week: weekStart.format(tickFormat), created, completed });
   }
 
   // Project task counts
@@ -92,7 +101,24 @@ export default function Analytics() {
 
       {/* Velocity Chart */}
       <div className="bg-white rounded-2xl p-6 shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#E8E8EA]">
-        <h2 className="font-heading font-semibold text-lg text-[#0A0A0A] mb-4">Task Velocity (12 Weeks)</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-heading font-semibold text-lg text-[#0A0A0A]">Task Velocity</h2>
+          <div className="flex gap-1 bg-[#F5F5F7] rounded-lg p-1">
+            {RANGE_OPTIONS.map((opt) => (
+              <button
+                key={opt.label}
+                onClick={() => setVelocityRange(opt.weeks)}
+                className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${
+                  velocityRange === opt.weeks
+                    ? "bg-white text-[#0A0A0A] shadow-sm"
+                    : "text-[#6B6B72] hover:text-[#0A0A0A]"
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
         <ResponsiveContainer width="100%" height={300}>
           <AreaChart data={velocityData}>
             <defs>
