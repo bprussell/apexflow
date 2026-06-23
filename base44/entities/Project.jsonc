@@ -1,0 +1,67 @@
+{
+  "name": "Project",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "planning",
+        "active",
+        "on_hold",
+        "completed",
+        "cancelled"
+      ],
+      "default": "planning"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "default": "medium"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "progress": {
+      "type": "number",
+      "default": 0
+    },
+    "owner_id": {
+      "type": "string"
+    },
+    "team_members": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "color": {
+      "type": "string",
+      "default": "#2DDDA8"
+    }
+  },
+  "required": [
+    "title"
+  ]
+}
